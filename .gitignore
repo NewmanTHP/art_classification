@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.pytest_cache/
+
+# Data & artifacts
+data/
+cache/
+checkpoints/
+reports/
+*.pt
+*.pth
+*.ckpt
+
+# Logs
+logs/
+wandb/
+*.log
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/

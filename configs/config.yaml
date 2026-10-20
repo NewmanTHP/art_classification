@@ -1,0 +1,52 @@
+# Central configuration for the WikiArt-ViT project.
+# Override any value from the CLI, e.g.:
+#   python -m src.train --config configs/config.yaml --epochs_finetune 5
+
+data:
+  dataset_name: "huggan/wikiart"     # HuggingFace Hub dataset id
+  label_column: "style"               # column used as the classification target
+  min_samples_per_class: 300          # classes with fewer examples are dropped
+  image_size: 224
+  train_split: 0.70
+  val_split: 0.15
+  test_split: 0.15
+  seed: 42
+  cache_dir: "data/cache"
+
+augmentation:
+  random_resized_crop_scale: [0.85, 1.0]   # mild crop, preserves overall composition
+  color_jitter_brightness: 0.1
+  color_jitter_contrast: 0.1
+  color_jitter_saturation: 0.1
+  color_jitter_hue: 0.02
+  horizontal_flip_prob: 0.5
+
+model:
+  vit_checkpoint: "google/vit-base-patch16-224-in21k"
+  resnet_baseline: "resnet50"          # torchvision baseline for comparison
+  dropout: 0.1
+
+training:
+  batch_size: 32
+  num_workers: 4
+  fp16: true
+
+  # Phase 1: frozen backbone, train classification head only
+  epochs_head: 5
+  lr_head: 1.0e-3
+
+  # Phase 2: full fine-tuning
+  epochs_finetune: 10
+  lr_finetune: 2.0e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.05
+  lr_scheduler: "cosine"               # cosine annealing over phase-2 steps
+
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+
+evaluation:
+  report_dir: "reports"
+  top_k: 5
+  attention_map_dir: "reports/attention_maps"
+  num_attention_examples: 12           # sample images to visualise per eval run
